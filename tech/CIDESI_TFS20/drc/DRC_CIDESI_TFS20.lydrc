@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>DRC para CIDESI_TFS20</description>
+ <version>0.1</version>
+ <category>drc</category>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>true</show-in-menu>
+ <group-name>drc_scripts</group-name>
+ <menu-path>tools_menu.drc.end</menu-path>
+ <interpreter>dsl</interpreter>
+ <dsl-interpreter-name>drc-dsl-xml</dsl-interpreter-name>
+ <text># DRC para proceso "CIDESI_TFS20"
+# Autor: Rodolfo Sanchez Fraga
+# Fecha: Abril-2025
+# Centro de Ingeniería y Desarrollo Industrial
+
+report("DRC para CIDESI_TFS10")
+
+  # Definición de capas
+  substrate = input(1,1)-input(1,3)
+  oxide_cut = input(1,0)-input(1,3)
+  oxide = substrate-oxide_cut
+  metal = input(2,0)-input(1,3)
+  nitride_cut = input(3,0)-input(1,3)
+  nitride = substrate-nitride_cut
+  pin = input(4,0)-input(1,3)
+  
+  metalFinal = pin + metal
+  
+  labels = input(6,0)
+  
+  forbidden = input(1,2)
+  
+  # Reglas para metal
+  #metal.width(20.um).output("Ancho de metal", "Violación de ancho mínimo de metal (&lt;20um)")
+  #metal.space(20.um).output("Espacio entre metal", "Violación de espacio entre metal (&lt;20um)")
+  #metal.notch(20.um).output("Muesca en metal", "Violación de tamaño de muesca en metal (&lt;20um)")
+  
+  # Reglas de espacio de diseño
+  metal.outside(substrate).output("Metal aislado","Metal debe estar definido dentro de área de substrato")
+  pin.outside(substrate).output("Pin aislado","Pin debe estar definido dentro de área de substrato")
+  nitride_cut.outside(substrate).output("Ventana de nitruro aislada","Corte de nitruro debe estar definido dentro de área de substrato")
+  
+  # Reglas de contactos (pin) y metal
+  #pin.enclosing(metal,1.um).output("Covertura de pin sobre metal","Espacio de covertura de pin sobre metal insuficiente (&lt;1um)")
+  metalFinal.width(20.um).output("Ancho de metal", "Violación de ancho mínimo de metal+pin (&lt;20um)")
+  metalFinal.space(20.um).output("Espacio entre metal", "Violación de espacio entre metal+pin (&lt;20um)")
+  metalFinal.notch(20.um).output("Muesca en metal", "Violación de tamaño de muesca en metal+pin (&lt;20um)")  
+  #pin.inside(metal).output("Error covertura de pin","Pin tiene que encerrar a metal")
+  
+  #labels.width(&gt;0.um).output("Geometrías en etiquetas","Geometrías en capa de etiquetas no se consideran")
+  labels.width(5000.um).output("Geometrias en capa de etiquetas", "Geometrías en capa de etiquetas no se toman en cuenta")
+  
+  #labels.width(&gt;0.um).output("Geometrías en etiquetas","Geometrías en capa de etiquetas no se consideran")
+  (metalFinal&amp;forbidden).width(5000.um).output("Error metal en area reservada", "No se permite editar área reservada")
+  (nitride_cut&amp;forbidden).width(5000.um).output("Error cortes de nitruro en area reservada", "No se permite editar área reservada")
+  (labels&amp;forbidden).width(5000.um).output("Error etiquetas en area reservada", "No se permite editar área reservada")
+    
+  # Se revisa que no existan coverturas negativas
+  #(metal-pin).output("Error en pin","Pin requiere de capa de metal")
+  
+  substrate.enclosing(metal,20.um).output("Error a borde de substrato","Espacio a borde de chip insuficiente (&lt;20um)")
+  
+  metal.odd_polygons.output("Error poligono metal", "Poligono con autotraslape en Metal")
+  nitride.odd_polygons.output("Error poligono nitruro", "Poligono con autotraslape en nitruro")
+  pin.odd_polygons.output("Error poligono pin", "Poligono con autotraslape en capa de Pin")
+  
+  </text>
+</klayout-macro>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>LVS para CIDESI_TFS20</description>
+ <version>0.1</version>
+ <category>lvs</category>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>true</show-in-menu>
+ <group-name>lvs_scripts</group-name>
+ <menu-path>tools_menu.lvs.end</menu-path>
+ <interpreter>dsl</interpreter>
+ <dsl-interpreter-name>lvs-dsl-xml</dsl-interpreter-name>
+ <text># DRC para proceso "CIDESI_TFS10"
+# Autor: Rodolfo Sanchez Fraga
+# Fecha: Abril-2025
+# Centro de Ingeniería y Desarrollo Industrial
+  
+  deep
+  report_lvs
+    
+  # Definición de capas
+  substrate = input(1,1)
+  oxide_cut = input(1,0)
+  oxide = substrate-oxide_cut
+  metal = input(2,0)
+  nitride_cut = input(3,0)
+  nitride = substrate-nitride_cut
+  pin = input(4,0)
+  cap_sel = input(5,0)
+  cap_pin1 = input(5,1)
+  cap_pin2 = input(5,2)
+  metal_labels = labels(6, 0)
+  cap_labels = labels(5,3)
+  
+  idm1 = cap_sel-metal
+  idm2 = cap_sel-metal
+   
+  # Extraccion de resistores
+  sheet_rho = 0.64
+  extract_devices(resistor("RTFS20", sheet_rho),{ "R" =&gt; metal, "C" =&gt; pin })
+  
+  # Extracción de capacitores laterales
+  lateral_cap = 18.75e-21
+  extract_devices(capacitor(" ",lateral_cap),{ "P1" =&gt; idm1, "P2" =&gt; idm2, "tA" =&gt;cap_pin1, "tB" =&gt; cap_pin2})
+  
+  #connect(metal,pin)
+  connect(pin,metal_labels)
+  connect(cap_pin1,cap_labels)
+  connect(cap_pin2,cap_labels)
+  connect(cap_pin1,pin)
+  connect(cap_pin2,pin)
+  #connect(metal,metal_labels)
+  
+  netlist.make_top_level_pins
+  #netlist.flatten_circuit("*")
+  netlist.purge
+  netlist.purge_nets
+  
+  puts "Elementos extraidos"
+  puts netlist.to_s
+  
+  puts "Generando archivos"
+  
+  # Obtener ruta del layout
+  view = RBA::Application.instance.main_window.current_view
+  if view &amp;&amp; view.active_cellview
+    layout_path = view.active_cellview.filename
+    output_dir = File.dirname(layout_path)
+  else
+    output_dir = Dir.pwd
+  end
+    
+  use_net_names = true
+  with_comments = false
+  target_netlist("netlist.cir", write_spice(use_net_names,with_comments), "Netlist generado, proceso CIDESI_TFS20")
+ 
+  # Generar archivo .lib con modelos
+  lib_path = GenerateModels.create_rtd_lib(0.64, output_dir)  # 0.64 es sheet_rho
+
+  
+  puts "Proceso completado."</text>
+</klayout-macro>

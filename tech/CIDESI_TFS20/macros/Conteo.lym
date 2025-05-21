@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>Conteo de objetos seleccionados</description>
+ <version>0.1</version>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>true</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text># Autor: Rodolfo Sanchez Fraga
+# Fecha: Abril-2025
+# Centro de Ingeniería y Desarrollo Industrial
+
+module ConteoObjetos
+
+  # Se incluyen las clases y constantes de Klayout
+  include RBA
+  
+  # Se accede a la aplicacion Klayout y a la ventana principal
+  app = Application.instance
+  mw = app.main_window
+
+  # Se accede a la vista de layout actual
+  lv = mw.current_view
+  if lv == nil
+    raise "Shape Statistics: No view selected"
+  end
+
+  paths = 0
+  polygons = 0
+  boxes = 0
+  texts = 0
+
+  lv.each_object_selected do |sel|
+
+    shape = sel.shape
+
+    if shape.is_path?
+      paths += 1
+    elsif shape.is_box?
+      boxes += 1
+    elsif shape.is_polygon?
+      polygons += 1
+    elsif shape.is_text?
+      texts += 1
+    end
+
+  end
+
+  s = "Paths: #{paths}\n"
+  s += "Polygons: #{polygons}\n"
+  s += "Boxes: #{boxes}\n"
+  s += "Texts: #{texts}\n"
+
+  MessageBox::info("Shape Statistics", s, MessageBox::Ok)
+
+end
+</text>
+</klayout-macro>

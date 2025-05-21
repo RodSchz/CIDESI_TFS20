@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>Resistor serpentín</description>
+ <version>0.1</version>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>true</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>true</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text># PCell para Resistor en serpentín
+# Autor: Rodolfo Sanchez Fraga
+# Fecha: Abril-2025
+# Centro de Ingeniería y Desarrollo Industrial
+
+module ResistorLib
+
+  include RBA
+
+  # Declaración de la PCell para una resistencia en forma de resorte
+  class ResistorSpring &lt; PCellDeclarationHelper
+    include RBA
+
+    # Método constructor de la PCell. Aquí se definen los parámetros editables.
+    def initialize
+      super
+      # Capa para las trazas del resistor (LayerInfo)
+      param(:layer, TypeLayer, "Capa para resistor", :default =&gt; LayerInfo.new(1,0))
+      # Ancho del conductor en micras
+      param(:width, TypeDouble, "Ancho de pista (µm)",     :default =&gt; 20)
+      # Resistencia objetivo en Ohms
+      param(:cuadros, TypeDouble, "Número de cuadros",   :default =&gt; 100)
+      # Resistencia por cuadro (Ω/□) del proceso
+      param(:rsq, TypeDouble, "Resistencia por cuadro (Ω/□)", :default =&gt; 0.64)
+      # Paso entre trazas paralelas
+      param(:pitch, TypeDouble, "Longitud de dedo (µm)", :default =&gt; 100)
+    end
+
+
+    # Método que fuerza ciertos valores válidos para evitar errores (coerción de parámetros)
+    def coerce_parameters_impl
+      width &gt; 0        || (set_width 1.0)               # Asegura que el ancho sea positivo
+      rsq   &gt; 0        || (set_rsq   1.0)               # Asegura que Rsq sea positivo
+      cuadros &gt;= 0     || (set_cuadros 1.0)         # Asegura que la resistencia no sea negativa
+      pitch &gt;= width   || (set_pitch width * 1.2)       # Asegura separación suficiente entre trazas
+    end
+
+    # Método que genera la geometría de la PCell en el layout
+    def produce_impl
+      # Calcula la longitud total requerida según la fórmula R = Rsq * (L/W)
+      #num_squares = (resistance &gt; 0) ? (resistance / rsq) : 0
+      num_squares = cuadros
+      total_length = num_squares * width
+
+      # Determina cuántos segmentos (fingers) se necesitan para alcanzar esa longitud
+      fingers = (total_length / (pitch+2*width)).ceil
+      fingers = [fingers, 2].max  # Mínimo dos dedos para formar la estructura
+      #length = fingers * pitch
+      
+      # Método que define el texto que se mostrará al seleccionar la instancia en el layout
+      def display_text_impl
+        "ResistorSpring(Cuadros=#{'%.2f'%cuadros}, Fingers=#{'%.2f'%((cuadros*width)/(pitch+2*width)).ceil}, W=#{'%.2f'%width}µm)"
+      end
+      
+      # Como en cada finger se utilizan dos cuadros de esquina, se hace la corrección
+      cuadros_esquina = 2 * fingers
+      lperdida = 0.44 * cuadros_esquina
+      
+
+      # Construye los puntos del camino en forma de serpentina
+      path_pts = []                 # Array para almacenar puntos (DPoint) del camino
+      x = 0                         # Coordenada X inicial
+      y = 0                         # Coordenada Y inicial
+      dir = 1                       # Dirección de conexión vertical: 1=arriba, -1=abajo
+      fingers.times do |i|
+        path_pts &lt;&lt; DPoint.new(x, y)                # Punto inicial del segmento horizontal
+        x += width * 2                               # Avanza en X la longitud del tramo horizontal
+        path_pts &lt;&lt; DPoint.new(x, y)                # Punto final del tramo horizontal
+        y += pitch * dir                             # Desplaza en Y según el pitch y la dirección
+        dir *= -1                                    # Invierte la dirección para el siguiente tramo
+      end
+      
+
+      path_pts &lt;&lt; DPoint.new(x, y)                  # Añade punto final tras último desplazamiento 
+      #x += lperdida                                 # Desplazamiento para compensación por esquinas
+      #path_pts &lt;&lt; DPoint.new(x, y)                  # Añade punto de compensación
+
+      # Crea la trayectoria (path) con los puntos calculados
+      path = DPath.new(path_pts, width)             # Grosa de traza igual al ancho definido
+      # Inserta la forma en la capa especificada
+      cell.shapes(layer).insert(path)
+    end
+    end  # class ResistorSpring
+
+  # Biblioteca para registrar el PCell
+  class ResistorLib &lt; Library
+    def initialize
+      self.description = "Biblioteca de PCells de resistores serpentina"
+      layout.register_pcell("ResistorSpring", ResistorSpring.new)
+      register("ResistorLib")
+    end
+  end
+
+  # Instancia y registra la biblioteca
+  ResistorLib.new
+end</text>
+</klayout-macro>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>Capacitor interdigitado</description>
+ <version>0.1</version>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>true</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text># PCell para Capacitor interdigitado
+# Autor: Rodolfo Sanchez Fraga
+# Fecha: Mayo-2025
+# Centro de Ingeniería y Desarrollo Industrial
+
+module CapacitorLib
+  include RBA
+  
+  class InterdigitCap &lt; PCellDeclarationHelper
+
+  include RBA
+
+  def initialize
+    super
+    param(:m_layer, TypeLayer, "Capa para metal", :default =&gt; LayerInfo.new(2,0))
+    param(:pin_L, TypeLayer, "Capa para pin", :default =&gt; LayerInfo.new(4,0))
+    param(:w, TypeDouble, "Ancho (µm)", :default =&gt; 20, :hidden =&gt; true)
+    param(:l, TypeDouble, "Longitud de dedo (µm)", :default =&gt; 20)
+    param(:n, TypeInt, "No. de dedos", :default =&gt; 2)
+    param(:s, TypeDouble, "Separación (µm)", :default =&gt; 20, :hidden =&gt; true)
+    param(:nitride, TypeBoolean, "Remover nitruro", :default =&gt; false)
+    param(:capacitance, TypeDouble, "Capacitancia", :default =&gt; 1e-15,:hidden =&gt; true)
+  end
+
+
+  # Método que define el texto que se mostrará al seleccionar la instancia en el layout
+  def display_text_impl
+    if nitride == true
+      cap_A = 2.225e-18
+    else
+      cap_A = 18.75e-18
+    end
+    #capacitance = cap_l * (((2*n)-1)*(l+w))+w
+    capacitance = cap_A * ((((((2*n)-1)*(l+w))+w) * s )+((n*4-2)*w*s*1))
+    puts "Area:"
+    puts ((((((2*n)-1)*(l+w))+w) * s )+((n*4-2)*w*s*1))
+    puts "Capacitance: "
+    puts capacitance
+    "Capacitor interdigitado(C=#{'%.3f'%(capacitance*1e12)}fF)"
+  end
+
+  # Método que fuerza ciertos valores válidos para evitar errores (coerción de parámetros)
+  def coerce_parameters_impl
+    w &gt;= 20 || (set_w 20.0) # Asegura que el ancho sea positivo
+    s &gt;= 20 || (set_w 20.0) # Asegura que el espacio sea positivo
+    l &gt;= 20 || (set_l 20.0) # Asegura que
+    n &gt;= 1 || (set_n 1) # Asegura
+  end
+
+
+  def produce_impl
+    # Coordenada de inicio
+    x0 = 0.0
+    y0 = 0.0
+    x = x0
+    
+    n.times do |i|
+      x = x0 + i*(2*w + 2*s)
+      #MessageBox::info("Iteraciones", i, MessageBox::Ok)
+      # Dedos Impares
+      cell.shapes(m_layer).insert(DBox.new(x, y0, x + w, y0 + l))
+      cell.shapes(m_layer).insert(DBox.new(x, y0, x + w, y0 - w))
+      cell.shapes(LayerInfo.new(5,1)).insert(DBox.new(x, y0, x + w, y0 + l))
+      cell.shapes(LayerInfo.new(5,1)).insert(DBox.new(x, y0, x + w, y0 - w))
+      # Dedos Pares
+      cell.shapes(m_layer).insert(DBox.new(x + w + s, y0, x + 2*w + s, y0 + l))      
+      cell.shapes(m_layer).insert(DBox.new(x + w + s, y0 + l, x + 2*w + s, y0 + l + w))
+      cell.shapes(LayerInfo.new(5,2)).insert(DBox.new(x + w + s, y0, x + 2*w + s, y0 + l))      
+      cell.shapes(LayerInfo.new(5,2)).insert(DBox.new(x + w + s, y0 + l, x + 2*w + s, y0 + l + w))
+  end
+
+
+  # Calculando dimension horizontal de la celda
+  wcell = x0 + (n)*(2*w + 2*s)-s
+  
+  # Electrodo inferior
+  pin_a_box = DBox.new(x0, y0 - 2*w, wcell, y0 - w)
+  cell.shapes(m_layer).insert(pin_a_box)
+  cell.shapes(LayerInfo.new(5,1)).insert(pin_a_box)
+  #cell.terminals &lt; Terminal.new("A", pin_a_box)
+  
+  # Electrodo superior
+  pin_b_box = DBox.new(x0, y0 + l + w, wcell, y0 + l + 2*w)
+  cell.shapes(m_layer).insert(pin_b_box)
+  cell.shapes(LayerInfo.new(5,2)).insert(pin_b_box)
+  #cell.terminals &lt; Terminal.new("B", pin_b_box)
+     
+  # Marcador de capacitor
+  cell.shapes(LayerInfo.new(5,0)).insert(DBox.new(x0, y0-2*w, x0 + (n)*(2*w + 2*s)-s, y0+l+2*w))
+  #cell.shapes(LayerInfo.new(5,1)).insert(DBox.new(x0, y0-2*w, x0 + (n)*(2*w + 2*s)-s, y0+l+w))
+    
+  if nitride == true
+    cell.shapes(LayerInfo.new(3,0)).insert(DBox.new(x0, y0-w, x0 + (n)*(2*w + 2*s)-s, y0+l+w))
+  end
+
+  # Se crean las etiquetas
+  #x_center = wcell/2.0
+
+  #label_layer = LayerInfo.new(6,0)
+  #cell.shapes(label_layer).insert(DText.new("A",x_center,y0-1.5*w))
+  #cell.shapes(label_layer).insert(DText.new("B",x_center,y0 + l + 1.5*w))
+  
+  end
+
+end
+
+
+# Biblioteca para registrar el PCell
+
+class CapacitorLib &lt; Library
+
+  def initialize
+    self.description = "Biblioteca de PCells de capacitores interdigitados"
+    layout.register_pcell("ID_capacitor", InterdigitCap.new)
+    register("CapacitorLib")
+  end
+end
+
+# Instancia y registra la biblioteca
+
+CapacitorLib.new
+
+
+end</text>
+</klayout-macro>
