@@ -43,9 +43,9 @@ module CapacitorLib
   # Método que define el texto que se mostrará al seleccionar la instancia en el layout
   def display_text_impl
     if nitride == true
-      cap_A = 2.225e-18
+      cap_A = 2.6646e-16
     else
-      cap_A = 18.75e-18
+      cap_A = 2.6646e-16
     end
     #capacitance = cap_l * (((2*n)-1)*(l+w))+w
     capacitance = cap_A * ((((((2*n)-1)*(l+w))+w) * s )+((n*4-2)*w*s*1))
