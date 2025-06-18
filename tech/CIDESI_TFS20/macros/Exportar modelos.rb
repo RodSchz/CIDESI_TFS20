@@ -13,7 +13,7 @@ module GenerateModels
       f.puts "* Autor: Rodolfo Sanchez Fraga"
       f.puts "* Gerencia de Semiconductores y Microtecnologías, CIDESI"
       f.puts "* Modelo resistor con efecto de temperatura, Resistencia por cuadro: #{sheet_rho} Ω/□"
-      f.puts ".model RTFS20 RES(TC1=0.00587)"
+      f.puts ".model RTFS20 RES(TC1=0.00293)"
       f.puts ".include netlist.cir"
     end
     
