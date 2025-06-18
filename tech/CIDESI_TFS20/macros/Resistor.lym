@@ -32,13 +32,13 @@ module ResistorLib
     def initialize
       super
       # Capa para las trazas del resistor (LayerInfo)
-      param(:layer, TypeLayer, "Capa para resistor", :default =&gt; LayerInfo.new(1,0))
+      param(:layer, TypeLayer, "Capa para resistor", :default =&gt; LayerInfo.new(2,0))
       # Ancho del conductor en micras
       param(:width, TypeDouble, "Ancho de pista (µm)",     :default =&gt; 20)
       # Resistencia objetivo en Ohms
       param(:cuadros, TypeDouble, "Número de cuadros",   :default =&gt; 100)
       # Resistencia por cuadro (Ω/□) del proceso
-      param(:rsq, TypeDouble, "Resistencia por cuadro (Ω/□)", :default =&gt; 0.64)
+      param(:rsq, TypeDouble, "Resistencia por cuadro (Ω/□)", :default =&gt; 1.8719)
       # Paso entre trazas paralelas
       param(:pitch, TypeDouble, "Longitud de dedo (µm)", :default =&gt; 100)
     end
