@@ -41,11 +41,11 @@
   idm2 = cap_sel-metal
    
   # Extraccion de resistores
-  sheet_rho = 0.64
+  sheet_rho = 1.8719
   extract_devices(resistor("RTFS20", sheet_rho),{ "R" =&gt; metal, "C" =&gt; pin })
   
   # Extracción de capacitores laterales
-  lateral_cap = 18.75e-21
+  lateral_cap = 2.6646e-19
   extract_devices(capacitor(" ",lateral_cap),{ "P1" =&gt; idm1, "P2" =&gt; idm2, "tA" =&gt;cap_pin1, "tB" =&gt; cap_pin2})
   
   #connect(metal,pin)
