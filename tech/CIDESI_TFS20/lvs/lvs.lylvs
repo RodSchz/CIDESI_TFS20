@@ -82,6 +82,47 @@
   # Generar archivo .lib con modelos
   lib_path = GenerateModels.create_rtd_lib(0.64, output_dir)  # 0.64 es sheet_rho
 
+  require 'digest'
+
+  netlist_orig = File.join(output_dir, "netlist.cir")
+  netlist_lts  = File.join(output_dir, "netlist_ltspice.cir")
+
+  puts "[DBG] orig path: #{netlist_orig}"
+  puts "[DBG] lts  path: #{netlist_lts}"
+  
+  raise "[ERR] No existe #{netlist_orig}" unless File.exist?(netlist_orig)
+  
+  orig_text = File.read(netlist_orig)
+  orig_md5  = Digest::MD5.hexdigest(orig_text)
+  puts "[DBG] orig md5: #{orig_md5}"
+  puts "[DBG] orig mtime: #{File.mtime(netlist_orig)}"
+  
+  rx = /^(\s*R\S+\s+\S+\s+\S+)\s+([+-]?\d*\.?\d+(?:[eE][+-]?\d+)?(?:[a-zA-Z]+)?)\s+(RTFS20)\b/
+  count = 0
+  new_text = orig_text.gsub(rx) do
+    count += 1
+    "#{$1} #{$3} #{$2}"
+  end
+  
+  puts "[DBG] reemplazos: #{count}"
+  
+  File.write(netlist_lts, new_text)
+  
+  lts_text = File.read(netlist_lts)
+  lts_md5  = Digest::MD5.hexdigest(lts_text)
+  puts "[DBG] lts md5:  #{lts_md5}"
+  puts "[DBG] lts mtime: #{File.mtime(netlist_lts)}"
+  
+  puts "[DBG] preview lts:"
+  lts_text.lines.first(10).each_with_index { |ln, i| puts "[DBG] #{i+1}: #{ln.chomp}" }
+  
+  if orig_md5 == lts_md5
+    puts "[WARN] netlist_ltspice.cir quedó idéntico al original"
+  else
+    puts "[OK] netlist_ltspice.cir generado con cambios"
+  end
+
   
   puts "Proceso completado."</text>
 </klayout-macro>
+
