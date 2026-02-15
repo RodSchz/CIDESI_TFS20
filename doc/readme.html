@@ -1,50 +1,420 @@
-<html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Especificación técnica — CIDESI_TFS20</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121a33;
+      --text:#e9eefc;
+      --muted:#b9c4e6;
+      --accent:#7aa2ff;
+      --accent-2:#87e0ff;
+      --ok:#4cd08a;
+      --warn:#ffd166;
+      --danger:#ff7b7b;
+      --line:#2a355f;
+      --chip:#1a2448;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#0b1020 0%, #0e142a 100%);color:var(--text);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;line-height:1.55}
+    a{color:var(--accent-2);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    .hero{
+      background:linear-gradient(145deg,#18244a 0%, #101933 100%);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:28px;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+    }
+    .title{margin:0 0 8px 0;font-size:clamp(1.4rem,2.6vw,2.3rem);line-height:1.2}
+    .subtitle{margin:0;color:var(--muted)}
+    .meta-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:12px;margin-top:18px
+    }
+    .meta{
+      background:var(--chip);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:.95rem
+    }
+    .meta b{display:block;color:var(--accent);margin-bottom:4px}
+    nav.toc{
+      margin:22px 0 0;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px 16px;
+    }
+    nav.toc h2{margin:0 0 8px 0;font-size:1.05rem;color:var(--accent-2)}
+    nav.toc ol{margin:0;padding-left:1.2rem}
+    nav.toc li{margin:4px 0}
+    section{
+      margin-top:20px;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:20px;
+    }
+    h2{margin:0 0 10px 0;font-size:1.35rem;color:var(--accent-2)}
+    h3{margin:14px 0 8px 0;font-size:1.05rem;color:var(--accent)}
+    p{margin:.5rem 0}
+    ul,ol{margin:.35rem 0 .6rem 1.2rem}
+    .small{font-size:.92rem;color:var(--muted)}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+      background:#0f1731;
+      border-radius:10px;
+      overflow:hidden;
+      border:1px solid var(--line)
+    }
+    th,td{
+      border-bottom:1px solid var(--line);
+      padding:10px 10px;
+      text-align:left;
+      vertical-align:top
+    }
+    th{background:#16224a;color:#cfe0ff}
+    tr:last-child td{border-bottom:none}
+    code,kbd{
+      background:#101a3a;
+      border:1px solid #2d3b72;
+      border-radius:8px;
+      padding:1px 6px;
+      font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+      font-size:.92em;
+      color:#d8e5ff
+    }
+    .callout{
+      border-left:4px solid var(--warn);
+      background:#3b3019;
+      color:#ffe7a3;
+      padding:10px 12px;
+      border-radius:8px;
+      margin:10px 0
+    }
+    .ok{
+      border-left-color:var(--ok);
+      background:#123124;
+      color:#c7ffe2
+    }
+    .danger{
+      border-left-color:var(--danger);
+      background:#3a1b22;
+      color:#ffd7de
+    }
+    footer{
+      margin:22px 0 10px;
+      color:var(--muted);
+      font-size:.9rem;
+      text-align:center
+    }
+    .badge{
+      display:inline-block;
+      background:#1f2d5c;
+      border:1px solid #3a4e9b;
+      color:#cfe0ff;
+      border-radius:999px;
+      padding:2px 10px;
+      margin-right:6px;
+      font-size:.82rem
+    }
+    .mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+  </style>
+</head>
 <body>
+  <main class="container">
+    <header class="hero" id="inicio">
+      <h1 class="title">Especificación técnica del proceso <span class="mono">CIDESI_TFS20</span></h1>
+      <p class="subtitle">Centro de Ingeniería y Desarrollo Industrial (CIDESI) · Laboratorio Nacional de Micro y Nano Tecnologías (LNunT)</p>
 
-<h1>Your new Package</h1>
+      <!-- AUTORES EN SECCIÓN INICIAL -->
+      <div class="meta-grid" aria-label="Datos iniciales y autores">
+        <div class="meta">
+          <b>Autores</b>
+          Paquete de tecnología:<br /> <b>Rodolfo Sánchez Fraga</b><br />
+          Proceso de microfabricación:<br /> <b>Iker Chávez Urbiola</b>
+        </div>
+        <div class="meta">
+          <b>Institución</b>
+          Centro de Ingeniería y Desarrollo Industrial (CIDESI)
+        </div>
+        <div class="meta">
+          <b>Versión del documento</b>
+          1.0 (borrador técnico)
+        </div>
+        <div class="meta">
+          <b>Fecha de lanzamiento</b>
+          Abril 2025
+        </div>
+        <div class="meta">
+          <b>Estado</b>
+          ACTIVO, en esquema MPW
+        </div>
+      </div>
 
-<p>
-Your new package is there! You can edit the package properties in the package manager. 
-Use the edit button in the upper right corner of the package details panel to
-open the package editor.
-</p>
+      <nav class="toc" aria-label="Tabla de contenido">
+        <h2>Tabla de contenido</h2>
+        <ol>
+          <li><a href="#descripcion-general">Descripción general</a></li>
+          <li><a href="#especificaciones">Especificaciones generales</a></li>
+          <li><a href="#capas-mascaras">Capas, máscaras y correspondencia física</a></li>
+          <li><a href="#derivacion-geometrica">Derivación geométrica interna (DRC/LVS)</a></li>
+          <li><a href="#reglas-drc">Reglas de diseño (DRC)</a></li>
+          <li><a href="#lvs-netlist">Extracción LVS y netlist</a></li>
+          <li><a href="#flujo">Flujo recomendado de diseño</a></li>
+          <li><a href="#restricciones">Restricciones y buenas prácticas</a></li>
+          <li><a href="#trazabilidad">Trazabilidad y control de cambios</a></li>
+          <li><a href="#observaciones">Observaciones técnicas previas a release</a></li>
+        </ol>
+      </nav>
+    </header>
 
-<p>
-Here is what you should do:
-</p>
+    <section id="descripcion-general">
+      <h2>1) Descripción general</h2>
+      <p><strong>CIDESI_TFS20</strong> es un proceso de película delgada orientado a dispositivos resistivos y estructuras pasivas sobre oblea de silicio oxidada.</p>
+      <p>El stack principal se compone de:</p>
+      <ul>
+        <li><strong>Si</strong> (soporte mecánico),</li>
+        <li><strong>SiO₂</strong> (aislamiento eléctrico),</li>
+        <li><strong>Cr/Ni</strong> (elemento conductor/resistivo),</li>
+        <li><strong>Si₃N₄</strong> (pasivación con aperturas para acceso eléctrico).</li>
+      </ul>
+      <p>Aplicaciones objetivo: RTD, electrodos, microheaters, estructuras de prueba y extracción de modelos resistivos/capacitivos para simulación SPICE.</p>
+    </section>
 
-<ul>
-  <li>Enter your author details</li>
-  <li>Choose a license model</li>
-  <li>Provide an icon and optionally a screenshot image</li>
-  <li>Complete the technology definition</li>
-  <li>Specify dependencies if you plan to use items from other packages</li>
-</ul>
+    <section id="especificaciones">
+      <h2>2) Especificaciones generales</h2>
 
-<p>
-Of course, the most interesting thing is how to edit the technology definition.
-When the package was initialized, a folder hierarchy consisting of a tech
-folder containing a technology definition file and empty "libraries", "macros", 
-"pymacros" and "drc" folders was created. You can use these empty folders
-to put your own files there. The technology definition can be edited in the
-technology manager where you can find the technology as "new_tech" under the
-name you had given the package. Initially, the technology definition is 
-without any particular definitions.
-</p>
+      <h3>2.1 Stack físico nominal</h3>
+      <table>
+        <thead>
+          <tr><th>Capa</th><th>Espesor nominal</th><th>Función</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Si (substrato)</td><td>400 µm</td><td>Soporte mecánico</td></tr>
+          <tr><td>SiO₂</td><td>500 nm</td><td>Aislamiento eléctrico</td></tr>
+          <tr><td>Cr/Ni (metal)</td><td>20 nm Cr + 130 nm Ni</td><td>Conducción / resistencia</td></tr>
+          <tr><td>Si₃N₄</td><td>100 nm</td><td>Pasivación / protección</td></tr>
+        </tbody>
+      </table>
+      <p class="small">Nota: DRC/LVS opera sobre geometría (layout); no sobre espesores físicos.</p>
 
-<p>
-In the package details you will find the local path to your package
-data under "Installation". You can use any versioning system to manage your
-files there. 
-</p>
+      <h3>2.2 Parámetros eléctricos de referencia</h3>
+      <table>
+        <thead>
+          <tr><th>Especificación</th><th>Valor</th><th>Unidad</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Resistencia por cuadro de metal (R□)</td><td>1.8719</td><td>Ω/□</td></tr>
+          <tr><td>Coeficiente de temperatura de Ni (TC1)</td><td>0.00293</td><td>1/°C</td></tr>
+          <tr><td>Constante dieléctrica de Si₃N₄</td><td>8.5</td><td>—</td></tr>
+          <tr><td>Constante dieléctrica de SiO₂</td><td>3.9</td><td>—</td></tr>
+        </tbody>
+      </table>
 
-<p>
-Once you have finished your package, don't forget to specify the package version
-so users of you package will be informed of updates. Finally you can publish the
-package files to a place of your choice and submit the download URL to the 
-Salt Mine server.
-</p>
+      <h3>2.3 Parámetros de extracción LVS</h3>
+      <ul>
+        <li>Resistor extraído: modelo <code>RTFS20</code> con <code>sheet_rho = 1.8719</code>.</li>
+        <li>Capacitor lateral (IDM): <code>2.6646e-19</code> (según convención del extractor).</li>
+      </ul>
+    </section>
 
+    <section id="capas-mascaras">
+      <h2>3) Capas, máscaras y correspondencia física</h2>
+
+      <h3>3.1 Capas de layout (KLayout/GDS)</h3>
+      <table>
+        <thead>
+          <tr><th>Nombre lógico</th><th>Capa/Datatype</th><th>Uso</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Silicio (substrato)</td><td>1/1</td><td>Dominio de validez geométrica</td></tr>
+          <tr><td>Corte_óxido (SiO₂)</td><td>1/0</td><td>Ventanas/cortes de óxido</td></tr>
+          <tr><td>Metal (Cr/Ni)</td><td>2/0</td><td>Patrón conductivo/resistivo</td></tr>
+          <tr><td>Corte_nitruro (Si₃N₄)</td><td>3/0</td><td>Aperturas de pasivación</td></tr>
+          <tr><td>Metal pin</td><td>4/0</td><td>Terminales eléctricas</td></tr>
+          <tr><td>Metal labels</td><td>6/0</td><td>Etiquetas de red</td></tr>
+          <tr><td>Region_reservada</td><td>1/2</td><td>Área no editable</td></tr>
+          <tr><td>Region_NO_DRC</td><td>1/3</td><td>Exclusión de verificación</td></tr>
+          <tr><td>IDM_sel</td><td>5/0</td><td>Selección capacitor lateral</td></tr>
+          <tr><td>ID_TA</td><td>5/1</td><td>Terminal A capacitor lateral</td></tr>
+          <tr><td>ID_TB</td><td>5/2</td><td>Terminal B capacitor lateral</td></tr>
+          <tr><td>ID_labels</td><td>5/3</td><td>Etiquetas de nodo IDM</td></tr>
+        </tbody>
+      </table>
+
+      <h3>3.2 Relación capa ↔ máscara de fabricación</h3>
+      <ul>
+        <li><strong>Máscara M1 (metal):</strong> define <code>2/0 Metal (Cr/Ni)</code>.</li>
+        <li><strong>Máscara Vn (apertura nitruro):</strong> define <code>3/0 Corte_nitruro</code>.</li>
+        <li><strong>Capas auxiliares CAD/PDK:</strong> <code>4/0</code>, <code>6/0</code>, familia <code>5/x</code>, regiones <code>1/2</code> y <code>1/3</code>.</li>
+      </ul>
+
+      <div class="callout">
+        <code>1/0 Corte_óxido</code> no corresponde a una fotomáscara entregable al usuario, se encuentra únicamente como
+        <strong>capa derivada de verificación</strong> por lo que se solicita no utilizarla dentro de los diseños.
+      </div>
+    </section>
+
+    <section id="derivacion-geometrica">
+      <h2>4) Derivación geométrica interna (DRC/LVS)</h2>
+      <p>Los scripts definen capas derivadas para chequeo y extracción:</p>
+      <ul>
+        <li><code>substrate = input(1,1) - input(1,3)</code></li>
+        <li><code>oxide_cut = input(1,0) - input(1,3)</code></li>
+        <li><code>oxide = substrate - oxide_cut</code></li>
+        <li><code>metal = input(2,0) - input(1,3)</code></li>
+        <li><code>nitride_cut = input(3,0) - input(1,3)</code></li>
+        <li><code>nitride = substrate - nitride_cut</code></li>
+        <li><code>pin = input(4,0) - input(1,3)</code></li>
+      </ul>
+      <p><span class="badge">Interpretación</span> La capa <code>1/3 Region_NO_DRC</code> actúa como exclusión de chequeo/extracción global.</p>
+    </section>
+
+    <section id="reglas-drc">
+      <h2>5) Reglas de diseño (DRC) vigentes</h2>
+
+      <h3>5.1 Contención en dominio de sustrato</h3>
+      <ul>
+        <li><code>metal.outside(substrate)</code></li>
+        <li><code>pin.outside(substrate)</code></li>
+        <li><code>nitride_cut.outside(substrate)</code></li>
+      </ul>
+
+      <h3>5.2 Reglas mínimas sobre metal efectivo</h3>
+      <p>Se evalúa <code>metalFinal = pin + metal</code> con:</p>
+      <ul>
+        <li><strong>Ancho mínimo:</strong> 20 µm</li>
+        <li><strong>Espacio mínimo:</strong> 20 µm</li>
+        <li><strong>Muesca mínima:</strong> 20 µm</li>
+      </ul>
+
+      <h3>5.3 Regla de borde</h3>
+      <ul>
+        <li><code>substrate.enclosing(metal,20.um)</code> → separación mínima a borde de chip: 20 µm.</li>
+      </ul>
+
+      <h3>5.4 Área reservada</h3>
+      <ul>
+        <li>No se permite edición en <code>1/2 Region_reservada</code> para: <code>metalFinal</code>, <code>nitride_cut</code>, <code>labels</code>.</li>
+      </ul>
+
+      <h3>5.5 Integridad geométrica</h3>
+      <ul>
+        <li><code>metal.odd_polygons</code></li>
+        <li><code>nitride.odd_polygons</code></li>
+        <li><code>pin.odd_polygons</code></li>
+      </ul>
+
+      <div class="callout ok">
+        Reglas comentadas (enclosure de pin, etc.) están disponibles en script pero actualmente desactivadas.
+      </div>
+    </section>
+
+    <section id="lvs-netlist">
+      <h2>6) Extracción LVS y netlist</h2>
+
+      <h3>6.1 Dispositivos extraídos</h3>
+      <ol>
+        <li>
+          <strong>Resistor metálico:</strong> modelo <code>RTFS20</code>, con <code>sheet_rho = 1.8719</code>.
+          Terminales definidos mediante <code>pin</code>.
+        </li>
+        <li>
+          <strong>Capacitor lateral (IDM):</strong> constante <code>2.6646e-19</code>;
+          terminales en <code>ID_TA (5/1)</code> y <code>ID_TB (5/2)</code>, selección <code>IDM_sel (5/0)</code>.
+        </li>
+      </ol>
+
+      <h3>6.2 Conectividad y exportación</h3>
+      <ul>
+        <li>Conexión de etiquetas metálicas: <code>connect(pin, metal_labels)</code>.</li>
+        <li>Conexión de etiquetas IDM: <code>connect(cap_pin1, cap_labels)</code>, <code>connect(cap_pin2, cap_labels)</code>.</li>
+        <li>Purga de netlist: <code>netlist.purge</code> y <code>netlist.purge_nets</code>.</li>
+        <li>Salida: <code>netlist.cir</code> y <code>netlist_ltspice.cir</code> (+ librería <code>.lib</code>).</li>
+      </ul>
+    </section>
+
+    <section id="flujo">
+      <h2>7) Flujo recomendado de diseño (usuario)</h2>
+      <ol>
+        <li>Definir dominio de diseño en <code>1/1 substrate</code>.</li>
+        <li>Dibujar <code>2/0 metal</code> cumpliendo reglas mínimas.</li>
+        <li>Definir terminales con <code>4/0 pin</code>.</li>
+        <li>Definir aperturas de pasivación con <code>3/0 nitride_cut</code>.</li>
+        <li>Etiquetar redes eléctricas en <code>6/0 labels</code>.</li>
+        <li>(Opcional) Definir extracción IDM en capas <code>5/0..5/3</code>.</li>
+        <li>Ejecutar DRC y corregir violaciones.</li>
+        <li>Ejecutar LVS/extracción y revisar netlist final.</li>
+        <li>Simular en SPICE/LTspice con la <code>.lib</code> del proceso.</li>
+      </ol>
+    </section>
+
+    <section id="restricciones">
+      <h2>8) Restricciones y buenas prácticas</h2>
+      <ul>
+        <li>No dejar geometrías fuera de <code>substrate</code>.</li>
+        <li>Respetar 20 µm en ancho/espacio/muesca del conductor efectivo (<code>metal + pin</code>).</li>
+        <li>No dibujar en <code>Region_reservada (1/2)</code>.</li>
+        <li>Evitar polígonos con autotraslape.</li>
+        <li>Usar nombres de red consistentes (<code>IN</code>, <code>OUT</code>, <code>VDD</code>, <code>GND</code>, etc.).</li>
+      </ul>
+    </section>
+
+    <section id="trazabilidad">
+      <h2>9) Trazabilidad y control de cambios</h2>
+      <table>
+        <thead>
+          <tr><th>Versión</th><th>Fecha</th><th>Autor(es)</th><th>Cambios</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0.1</td><td>2025-04</td><td>Rodolfo Sánchez Fraga</td><td>Primera base de scripts DRC/LVS</td></tr>
+          <tr><td>1.0</td><td>2025-XX</td><td>Equipo PDK CIDESI</td><td>Documento de especificación integrado</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="observaciones">
+      <h2>10) Observaciones técnicas previas a release</h2>
+
+      <div class="callout danger">
+        <strong>Punto 1:</strong> En encabezados/scripts aparece “TFS10” en algunos textos de reporte.  
+        Se recomienda normalizar a <strong>TFS20</strong>.
+      </div>
+
+      <div class="callout danger">
+        <strong>Punto 2:</strong> Inconsistencia en <code>sheet_rho</code>: extracción usa <code>1.8719</code>, generación de <code>.lib</code> muestra <code>0.64</code>.  
+        Unificar o documentar diferencia (nominal vs calibrado).
+      </div>
+
+      <div class="callout danger">
+        <strong>Punto 3:</strong> En LVS, <code>idm1</code> e <code>idm2</code> se definen idénticos (<code>cap_sel - metal</code>), lo que puede invalidar la separación de terminales del capacitor lateral.
+      </div>
+
+      <div class="callout">
+        <strong>Punto 4:</strong> Existen reglas útiles comentadas (enclosure/cobertura de pin).  
+        Considerar activarlas para tapeout regular.
+      </div>
+
+      <div class="callout">
+        <strong>Punto 5:</strong> El control de geometrías en labels con umbral de 5000 µm funciona, pero conviene migrar a una validación más explícita para mayor claridad.
+      </div>
+    </section>
+
+    <footer>
+      Documento técnico HTML para publicación en línea · CIDESI_TFS20 · Última actualización: 2025
+    </footer>
+  </main>
 </body>
 </html>
+
 
