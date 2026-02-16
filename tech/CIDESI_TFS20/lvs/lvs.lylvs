@@ -80,7 +80,7 @@
   target_netlist("netlist.cir", write_spice(use_net_names,with_comments), "Netlist generado, proceso CIDESI_TFS20")
  
   # Generar archivo .lib con modelos
-  lib_path = GenerateModels.create_rtd_lib(0.64, output_dir)  # 0.64 es sheet_rho
+  lib_path = GenerateModels.create_rtd_lib(1.8719, output_dir)  # 1.8719 es sheet_rho
 
   require 'digest'
 

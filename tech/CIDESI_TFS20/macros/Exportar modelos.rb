@@ -9,7 +9,7 @@ module GenerateModels
     lib_path = File.join(output_dir, "cidesi_tfs20_models.lib")
     
     File.open(lib_path, "w") do |f|
-      f.puts "* Librería de modelos para proceso CIDESI_TFS10"      
+      f.puts "* Librería de modelos para proceso CIDESI_TFS20"      
       f.puts "* Autor: Rodolfo Sanchez Fraga"
       f.puts "* Gerencia de Semiconductores y Microtecnologías, CIDESI"
       f.puts "* Modelo resistor con efecto de temperatura, Resistencia por cuadro: #{sheet_rho} Ω/□"
