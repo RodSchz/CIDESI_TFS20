@@ -6,7 +6,7 @@
  <dbu>1</dbu>
  <default-grids>0.1,0.5,1,2,2.5,5,7.5,10,100</default-grids>
  <base-path/>
- <original-base-path>C:\Users\Equipo1\KLayout\salt\CIDESI_TFS20\tech\CIDESI_TFS20</original-base-path>
+ <original-base-path>C:\Users\Lenovo\KLayout\salt\CIDESI_TFS20\tech\CIDESI_TFS20</original-base-path>
  <layer-properties_file>layer_CIDESI_TFS20.lyp</layer-properties_file>
  <add-other-layers>true</add-other-layers>
  <reader-options>
@@ -138,7 +138,6 @@
    <resolve-skew-arrays>false</resolve-skew-arrays>
    <max-vertex-count>8000</max-vertex-count>
    <max-cellname-length>32000</max-cellname-length>
-   <libname>LIB</libname>
   </gds2>
   <oasis>
    <compression-level>2</compression-level>
@@ -151,6 +150,11 @@
   <cif>
    <polygon-mode>0</polygon-mode>
   </cif>
+  <lstream>
+   <compression-level>2</compression-level>
+   <recompress>false</recompress>
+   <permissive>false</permissive>
+  </lstream>
   <cif>
    <dummy-calls>false</dummy-calls>
    <blank-separator>false</blank-separator>
