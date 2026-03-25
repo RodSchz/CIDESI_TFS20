@@ -66,8 +66,8 @@
   #-----------------------------------------------------------------------------------------------------------------
   netlist.make_top_level_pins
   #netlist.flatten_circuit("*")
-  netlist.purge
-  netlist.purge_nets
+  #netlist.purge
+  #netlist.purge_nets
   
   puts "Elementos extraidos"
   puts netlist.to_s
