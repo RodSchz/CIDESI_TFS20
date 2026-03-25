@@ -47,7 +47,7 @@
   sheet_rho = 1.8719
   res_body = metal - pin
   
-  extract_devices(resistor("RTFS20", sheet_rho),{ "R" =&gt; res_body, "C" =&gt; pin })
+  extract_devices(resistor("  ", sheet_rho),{ "R" =&gt; res_body, "C" =&gt; pin })
   
   #-----------------------------------------------------------------------------------------------------------------
   # Extracción de capacitores laterales
