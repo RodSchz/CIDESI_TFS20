@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <klayout-macro>
  <description>Pcells para TFS20</description>
- <version>0.1</version>
+ <version>0.2</version>
  <category/>
  <prolog/>
  <epilog/>
@@ -15,166 +15,88 @@
  <menu-path/>
  <interpreter>ruby</interpreter>
  <dsl-interpreter-name/>
- <text># PCells para Resistor en serpentín
-# Autor: Rodolfo Sanchez Fraga
+ <text># PCell para Resistor en serpentín
+# Autores: Iker Chávez, Rodolfo Sánchez
+#
 # Fecha: marzo-2026
 # Centro de Ingeniería y Desarrollo Industrial
 
-module TFS20Pcells
+module TFS20_pcells
 
   include RBA
 
-  # -----------------------------
-  # PCell: ResistorSerpentin
-  # -----------------------------
-  class ResistorSerpentin &lt; PCellDeclarationHelper
+  class Resistencia &lt; PCellDeclarationHelper
     include RBA
 
     def initialize
       super
-      param(:layer, TypeLayer, "Capa para resistor", :default =&gt; LayerInfo.new(2,0))
-      param(:width, TypeDouble, "Ancho de pista (µm)", :default =&gt; 20)
-      param(:cuadros, TypeDouble, "Número de cuadros", :default =&gt; 100)
-      param(:rsq, TypeDouble, "Resistencia por cuadro (Ω/□)", :default =&gt; 1.8719)
+      param(:layer, TypeLayer, "Capa", :default =&gt; LayerInfo.new(2,0))
+      param(:width, TypeDouble, "Ancho (µm)", :default =&gt; 20)
+      param(:length, TypeDouble, "Longitud total (µm)", :default =&gt; 2000)
+      param(:rsq, TypeDouble, "Rsq (Ω/□)", :default =&gt; 1.8719)
       param(:pitch, TypeDouble, "Longitud de dedo (µm)", :default =&gt; 100)
     end
 
-    def display_text_impl
-      fingers = [((cuadros * width) / (pitch + 2 * width)).ceil, 2].max
-      "ResistorSerpentin(Cuadros=#{'%.2f' % cuadros}, Fingers=#{fingers}, W=#{'%.2f' % width}µm)"
+    def coerce_parameters_impl
+      set_width(1.0) if width &lt;= 0
+      set_rsq(1.0) if rsq &lt;= 0
+      set_length(10.0) if length &lt;= 0
+      set_pitch(width * 1.2) if pitch &lt; width
     end
 
-    def coerce_parameters_impl
-      width &gt; 0    || (set_width 1.0)
-      rsq &gt; 0      || (set_rsq 1.0)
-      cuadros &gt;= 0 || (set_cuadros 1.0)
-      pitch &gt;= width || (set_pitch(width * 1.2))
+    def display_text_impl
+      r_estimada = rsq * (length / width)
+      "Resistencia(L=#{'%.1f'%length}µm, R≈#{'%.2f'%r_estimada}Ω)"
     end
 
     def produce_impl
-      num_squares = cuadros
-      total_length = num_squares * width
 
-      fingers = (total_length / (pitch + 2 * width)).ceil
-      fingers = [fingers, 2].max
+      target_length = length
 
       path_pts = []
-      x = 0
-      y = 0
+      x = 0.0
+      y = 0.0
       dir = 1
-
-      fingers.times do
-        path_pts &lt;&lt; DPoint.new(x, y)
-        x += width * 2
-        path_pts &lt;&lt; DPoint.new(x, y)
-        y += pitch * dir
-        dir *= -1
-      end
 
       path_pts &lt;&lt; DPoint.new(x, y)
 
+      current_length = 0.0
+
+      while current_length &lt; target_length
+
+        # Tramo horizontal (lo hacemos variable para ajustar longitud exacta)
+        dx = [2 * width, target_length - current_length].min
+        x += dx
+        path_pts &lt;&lt; DPoint.new(x, y)
+        current_length += dx
+
+        break if current_length &gt;= target_length
+
+        # Tramo vertical
+        dy = [pitch, target_length - current_length].min
+        y += dy * dir
+        path_pts &lt;&lt; DPoint.new(x, y)
+        current_length += dy
+
+        dir *= -1
+      end
+
       path = DPath.new(path_pts, width)
-      cell.shapes(layout.layer(layer)).insert(path)
+      cell.shapes(layer).insert(path)
+
     end
+
   end
 
-
-  # -----------------------------
-  # PCell: InterdigitCap
-  # -----------------------------
-  class InterdigitCap &lt; PCellDeclarationHelper
-    include RBA
-
+  class TFS20_pcells &lt; Library
     def initialize
-      super
-      param(:m_layer, TypeLayer, "Capa para metal", :default =&gt; LayerInfo.new(2,0))
-      param(:pin_L, TypeLayer, "Capa para pin", :default =&gt; LayerInfo.new(4,0))
-      param(:w, TypeDouble, "Ancho (µm)", :default =&gt; 20, :hidden =&gt; true)
-      param(:l, TypeDouble, "Longitud de dedo (µm)", :default =&gt; 20)
-      param(:n, TypeInt, "No. de dedos", :default =&gt; 2)
-      param(:s, TypeDouble, "Separación (µm)", :default =&gt; 20, :hidden =&gt; true)
-      param(:nitride, TypeBoolean, "Remover nitruro", :default =&gt; false)
-      param(:capacitance, TypeDouble, "Capacitancia", :default =&gt; 1e-15, :hidden =&gt; true)
-    end
-
-    def display_text_impl
-      cap_A = 2.6646e-16
-      cval = cap_A * (((((2 * n) - 1) * (l + w) + w) * s) + ((n * 4 - 2) * w * s))
-      "CapacitorInterdigitado(C=#{'%.3f' % (cval * 1e12)}fF)"
-    end
-
-    def coerce_parameters_impl
-      w &gt;= 20 || (set_w 20.0)
-      s &gt;= 20 || (set_s 20.0)
-      l &gt;= 20 || (set_l 20.0)
-      n &gt;= 1  || (set_n 1)
-    end
-
-    def produce_impl
-      x0 = 0.0
-      y0 = 0.0
-      x = x0
-
-      ml = layout.layer(m_layer)
-      pinl = layout.layer(pin_L)
-      l51 = layout.layer(LayerInfo.new(5,1))
-      l52 = layout.layer(LayerInfo.new(5,2))
-      l50 = layout.layer(LayerInfo.new(5,0))
-      l30 = layout.layer(LayerInfo.new(3,0))
-
-      n.times do |i|
-        x = x0 + i * (2 * w + 2 * s)
-
-        # Dedos impares
-        cell.shapes(ml).insert(DBox.new(x, y0, x + w, y0 + l))
-        cell.shapes(ml).insert(DBox.new(x, y0, x + w, y0 - w))
-        cell.shapes(l51).insert(DBox.new(x, y0, x + w, y0 + l))
-        cell.shapes(l51).insert(DBox.new(x, y0, x + w, y0 - w))
-
-        # Dedos pares
-        cell.shapes(ml).insert(DBox.new(x + w + s, y0, x + 2 * w + s, y0 + l))
-        cell.shapes(ml).insert(DBox.new(x + w + s, y0 + l, x + 2 * w + s, y0 + l + w))
-        cell.shapes(l52).insert(DBox.new(x + w + s, y0, x + 2 * w + s, y0 + l))
-        cell.shapes(l52).insert(DBox.new(x + w + s, y0 + l, x + 2 * w + s, y0 + l + w))
-      end
-
-      wcell = x0 + n * (2 * w + 2 * s) - s
-
-      # Electrodo inferior
-      pin_a_box = DBox.new(x0, y0 - 2 * w, wcell, y0 - w)
-      cell.shapes(ml).insert(pin_a_box)
-      cell.shapes(l51).insert(pin_a_box)
-      cell.shapes(pinl).insert(pin_a_box)
-
-      # Electrodo superior
-      pin_b_box = DBox.new(x0, y0 + l + w, wcell, y0 + l + 2 * w)
-      cell.shapes(ml).insert(pin_b_box)
-      cell.shapes(l52).insert(pin_b_box)
-      cell.shapes(pinl).insert(pin_b_box)
-
-      # Marcador de capacitor
-      cell.shapes(l50).insert(DBox.new(x0, y0 - 2 * w, wcell, y0 + l + 2 * w))
-
-      if nitride
-        cell.shapes(l30).insert(DBox.new(x0, y0 - w, wcell, y0 + l + w))
-      end
-    end
-  end
-
-
-  # -----------------------------
-  # Una sola library con dos PCells
-  # -----------------------------
-  class TFS20_pcells_library &lt; Library
-    def initialize
-      self.description = "Biblioteca pcells TFS20"
-      layout.register_pcell("Resistor_Serpentin", ResistorSerpentin.new)
-      layout.register_pcell("Capacitor_interdigitado", InterdigitCap.new)
+      self.description = "Biblioteca de PCells - Resistencia (longitud real)"
+      layout.register_pcell("Resistencia serpentin", Resistencia.new)
       register("TFS20_pcells")
     end
   end
 
-  TFS20_pcells_library.new
+  TFS20_pcells.new
 
 end</text>
 </klayout-macro>

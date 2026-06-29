@@ -3,7 +3,7 @@
  <name>CIDESI_TFS20</name>
  <token/>
  <hidden>false</hidden>
- <version>0.9.3</version>
+ <version>0.9.4</version>
  <api-version/>
  <title>Proceso CIDESI_TFS20</title>
  <doc>Proceso de fabricación estandarizado para MPW de una capa metálica de níquel.
@@ -11,7 +11,7 @@ Laboratorio Nacional de Micro y Nano Tecnologías (LNunT), CIDESI</doc>
  <doc-url>doc/readme.html</doc-url>
  <url/>
  <license>GPLv3</license>
- <author>Rodolfo Sanchez, Iker Chavez</author>
+ <author>Rodolfo Sanchez, Iker Chavez, Juan Ponce</author>
  <author-contact>rodolfo.sanchez@cidesi.edu.mx</author-contact>
  <authored-time/>
  <installed-time>2025-05-21T12:10:53</installed-time>
