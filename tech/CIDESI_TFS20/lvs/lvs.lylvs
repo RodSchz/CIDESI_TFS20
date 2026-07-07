@@ -30,6 +30,7 @@
   oxide_cut = input(1,0)
   oxide = substrate-oxide_cut
   metal = input(2,0)
+  metal2 = input(2,1)
   nitride_cut = input(3,0)
   nitride = substrate-nitride_cut
   pin = input(4,0)
@@ -45,9 +46,12 @@
   #-----------------------------------------------------------------------------------------------------------------   
   # Extraccion de resistores
   sheet_rho = 1.8719
+  sheet_rho2 = 12
   res_body = metal - pin
+  res_body2 = metal2 - pin
   
   extract_devices(resistor("TC1=0.00293", sheet_rho),{ "R" =&gt; res_body, "C" =&gt; pin })
+  extract_devices(resistor("TC1=0.0004", sheet_rho2),{ "R" =&gt; res_body2, "C" =&gt; pin })
   
   #-----------------------------------------------------------------------------------------------------------------
   # Extracción de capacitores laterales
